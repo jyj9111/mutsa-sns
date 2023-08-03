@@ -14,24 +14,24 @@ public class ControllerAdvice {
     // 400에러 처리
     @ExceptionHandler(Status400Exception.class)
     public ResponseEntity<ResponseDto> handle400(Status400Exception exception) {
-        ResponseDto response = new ResponseDto();
-        response.setMessage(exception.getMessage());
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(new ResponseDto(exception.getMessage()));
     }
 
     // 404에러 처리
     @ExceptionHandler(Status404Exception.class)
     public ResponseEntity<ResponseDto> handle404(Status404Exception exception) {
-        ResponseDto response = new ResponseDto();
-        response.setMessage(exception.getMessage());
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+        return ResponseEntity
+                .status(HttpStatus.NOT_FOUND)
+                .body(new ResponseDto(exception.getMessage()));
     }
 
     // 500에러 처리
     @ExceptionHandler(Status500Exception.class)
     public ResponseEntity<ResponseDto> handle500(Status500Exception exception) {
-        ResponseDto response = new ResponseDto();
-        response.setMessage(exception.getMessage());
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        return ResponseEntity
+                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(new ResponseDto(exception.getMessage()));
     }
 }

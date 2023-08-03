@@ -1,6 +1,6 @@
 package com.mutsa.sns.global.config;
 
-import com.mutsa.sns.global.auth.JwtFilter;
+import com.mutsa.sns.global.auth.JwtTokenFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -13,10 +13,10 @@ import org.springframework.security.web.access.intercept.AuthorizationFilter;
 
 @Configuration
 public class WebSecurityConfig {
-    private final JwtFilter jwtFilter;
+    private final JwtTokenFilter jwtTokenFilter;
 
-    public WebSecurityConfig(JwtFilter jwtFilter) {
-        this.jwtFilter = jwtFilter;
+    public WebSecurityConfig(JwtTokenFilter jwtTokenFilter) {
+        this.jwtTokenFilter = jwtTokenFilter;
     }
 
     @Bean
@@ -29,14 +29,14 @@ public class WebSecurityConfig {
                                 "/",
                                 "/users/register"
                         ).permitAll()
-                                .anyRequest()
-                                .authenticated()
+                        .anyRequest()
+                        .authenticated()
                 )
                 .sessionManagement(
                         sessionManagement -> sessionManagement
                                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
-                .addFilterBefore(jwtFilter, AuthorizationFilter.class);
+                .addFilterBefore(jwtTokenFilter, AuthorizationFilter.class);
 
         return http.build();
     }
