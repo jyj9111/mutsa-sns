@@ -34,6 +34,24 @@ public class CustomUserDetails implements UserDetails{
         return this.password;
     }
 
+    public User newEntity() {
+        User user = new User();
+        user.setUsername(this.username);
+        user.setPassword(this.password);
+        user.setEmail(this.email);
+        user.setPhone(this.phone);
+        return user;
+    }
+
+    public static CustomUserDetails fromEntity(User entity) {
+        return CustomUserDetails.builder()
+                .id(entity.getId())
+                .username(entity.getUsername())
+                .password(entity.getPassword())
+                .email(entity.getEmail())
+                .phone(entity.getPhone())
+                .build();
+    }
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return null;
@@ -41,21 +59,21 @@ public class CustomUserDetails implements UserDetails{
 
     @Override
     public boolean isAccountNonExpired() {
-        return false;
+        return true;
     }
 
     @Override
     public boolean isAccountNonLocked() {
-        return false;
+        return true;
     }
 
     @Override
     public boolean isCredentialsNonExpired() {
-        return false;
+        return true;
     }
 
     @Override
     public boolean isEnabled() {
-        return false;
+        return true;
     }
 }
