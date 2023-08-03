@@ -3,11 +3,13 @@ package com.mutsa.sns.domain.user.entity;
 import com.mutsa.sns.domain.user.dto.UserRegisterDto;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
-import lombok.Data;
+import lombok.*;
 
-
+@Builder
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
+@Getter
 @Entity
-@Data
 @Table(name = "user")
 public class User {
     @Id
@@ -24,12 +26,12 @@ public class User {
     private String profileImg;
 
     public static User fromRegisterDto(UserRegisterDto dto) {
-        User userEntity = new User();
-        userEntity.setUsername(dto.getUsername());
-        userEntity.setPassword(dto.getPassword());
-        userEntity.setEmail(dto.getEmail());
-        userEntity.setPhone(dto.getPhone());
-
-        return userEntity;
+        User user = new User();
+        user.builder()
+                .username(dto.getUsername())
+                .password(dto.getPassword())
+                .email(dto.getEmail())
+                .phone(dto.getPhone());
+        return user;
     }
 }

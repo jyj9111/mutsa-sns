@@ -36,10 +36,11 @@ public class CustomUserDetails implements UserDetails{
 
     public User newEntity() {
         User user = new User();
-        user.setUsername(this.username);
-        user.setPassword(this.password);
-        user.setEmail(this.email);
-        user.setPhone(this.phone);
+        user.builder()
+                .username(this.username)
+                .password(this.password)
+                .email(this.email)
+                .phone(this.phone);
         return user;
     }
 
