@@ -19,11 +19,11 @@ import java.util.ArrayList;
 
 @Slf4j
 @Component
-public class JwtFilter extends OncePerRequestFilter {
-    private final JwtUtils jwtUtils;
+public class JwtTokenFilter extends OncePerRequestFilter {
+    private final JwtTokenUtils jwtTokenUtils;
 
-    public JwtFilter(JwtUtils jwtUtils) {
-        this.jwtUtils = jwtUtils;
+    public JwtTokenFilter(JwtTokenUtils jwtTokenUtils) {
+        this.jwtTokenUtils = jwtTokenUtils;
     }
 
     @Override
@@ -35,11 +35,11 @@ public class JwtFilter extends OncePerRequestFilter {
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             String token = authHeader.split(" ")[1];
 
-            if (!jwtUtils.validateToken(token))
+            if (!jwtTokenUtils.validateToken(token))
                 log.warn("Jwt-Token validation failed");
 
             SecurityContext context = SecurityContextHolder.createEmptyContext();
-            String username = jwtUtils.parseClaims(token).getSubject();
+            String username = jwtTokenUtils.parseClaims(token).getSubject();
 
             AbstractAuthenticationToken authenticationToken
                     = new UsernamePasswordAuthenticationToken(
