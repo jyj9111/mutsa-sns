@@ -6,6 +6,7 @@ import com.mutsa.sns.domain.user.dto.UserRegisterDto;
 import com.mutsa.sns.domain.user.exception.PasswordDuplicateCheckFail;
 import com.mutsa.sns.domain.user.service.UserService;
 import com.mutsa.sns.global.common.ResponseDto;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -22,7 +23,7 @@ public class UserController {
 
     // 회원가입
     @PostMapping("/register")
-    public ResponseDto register(@RequestBody UserRegisterDto dto) {
+    public ResponseDto register(@Valid @RequestBody UserRegisterDto dto) {
         if (!dto.getPassword().equals(dto.getPasswordCheck())) {
             log.warn("{} 비밀번호 중복확인 실패", dto.getUsername());
             throw new PasswordDuplicateCheckFail();
@@ -33,7 +34,7 @@ public class UserController {
     // 로그인
     @PostMapping("/login")
     public UserLoginResponseDto login(
-            @RequestBody UserLoginRequestDto dto
+           @Valid @RequestBody UserLoginRequestDto dto
     ) {
         return userService.verifyUser(dto);
     }
