@@ -31,7 +31,24 @@ public class User {
                 .username(dto.getUsername())
                 .password(dto.getPassword())
                 .email(dto.getEmail())
-                .phone(dto.getPhone());
+                .phone(dto.getPhone())
+                .build();
         return user;
     }
+
+    public static User fromUserDetails(CustomUserDetails userDetails) {
+        return User.builder()
+                .id(userDetails.getId())
+                .username(userDetails.getUsername())
+                .password(userDetails.getPassword())
+                .email(userDetails.getEmail())
+                .phone(userDetails.getPhone())
+                .profileImg(userDetails.getProfileImg())
+                .build();
+
+    }
+    public void updateProfileImg(String imgUrl) {
+        this.profileImg = imgUrl;
+    }
+
 }

@@ -34,16 +34,6 @@ public class CustomUserDetails implements UserDetails{
         return this.password;
     }
 
-    public User newEntity() {
-        User user = new User();
-        user.builder()
-                .username(this.username)
-                .password(this.password)
-                .email(this.email)
-                .phone(this.phone);
-        return user;
-    }
-
     public static CustomUserDetails fromEntity(User entity) {
         return CustomUserDetails.builder()
                 .id(entity.getId())
@@ -51,6 +41,7 @@ public class CustomUserDetails implements UserDetails{
                 .password(entity.getPassword())
                 .email(entity.getEmail())
                 .phone(entity.getPhone())
+                .profileImg(entity.getProfileImg())
                 .build();
     }
     @Override

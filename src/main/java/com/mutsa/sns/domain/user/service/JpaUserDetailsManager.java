@@ -3,6 +3,7 @@ package com.mutsa.sns.domain.user.service;
 import com.mutsa.sns.domain.user.entity.CustomUserDetails;
 import com.mutsa.sns.domain.user.entity.User;
 import com.mutsa.sns.domain.user.exception.UsernameIsExist;
+import com.mutsa.sns.domain.user.exception.UsernameNotExist;
 import com.mutsa.sns.domain.user.repo.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -34,12 +35,12 @@ public class JpaUserDetailsManager implements UserDetailsManager {
     @Override
     public void createUser(UserDetails user) {
         if (this.userExists(user.getUsername())) {
-            log.warn("{} 이미 존재하는 이름", user.getUsername());
+            log.warn("[{}]: 이미 존재하는 이름", user.getUsername());
             throw new UsernameIsExist();
         }
         try {
-            userRepository.save(((CustomUserDetails)user).newEntity());
-            log.info("{} 유저등록 성공", user.getUsername());
+            userRepository.save(User.fromUserDetails((CustomUserDetails)user));
+            log.info("[{}]: 유저등록 성공", user.getUsername());
         } catch (ClassCastException e) {
             log.error(e.getMessage());
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
@@ -53,7 +54,17 @@ public class JpaUserDetailsManager implements UserDetailsManager {
 
     @Override
     public void updateUser(UserDetails user) {
-
+        if (!this.userExists(user.getUsername())) {
+            log.warn("[{}]: 존재하지 않는 유저");
+            throw new UsernameNotExist();
+        }
+        try {
+            userRepository.save(User.fromUserDetails((CustomUserDetails)user));
+            log.info("[{}]: 유저업데이트 성공", user.getUsername());
+        } catch (ClassCastException e) {
+            log.error(e.getMessage());
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @Override
