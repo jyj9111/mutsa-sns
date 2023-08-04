@@ -9,10 +9,11 @@ import com.mutsa.sns.global.common.ResponseDto;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.security.Principal;
 
 @Slf4j
 @RestController
@@ -37,5 +38,14 @@ public class UserController {
            @Valid @RequestBody UserLoginRequestDto dto
     ) {
         return userService.verifyUser(dto);
+    }
+
+    // 프로필 이미지 등록
+    @PutMapping(value = "/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseDto updateProfileImage(
+            Principal principal,
+            @RequestParam("image") MultipartFile profileImg
+    ) {
+        return userService.updateProfileImage(principal.getName(), profileImg);
     }
 }
