@@ -57,10 +57,12 @@ public class ArticleService {
         newArticle.setImages(feedImages);
         Article article = articleRepository.save(newArticle);
 
+
         return new ArticleResponseDto(
                 article.getId(),
                 article.getUser().getUsername(),
-                "피드 등록에 성공하였습니다."
+                "피드 등록에 성공하였습니다.",
+                article.getImageIdList(article.getImages())
         );
     }
 }
