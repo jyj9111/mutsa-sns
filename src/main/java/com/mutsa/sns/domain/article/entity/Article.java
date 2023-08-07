@@ -39,8 +39,14 @@ public class Article {
                 .build();
     }
 
+    public void updateArticle(String title, String content, List<FeedImage> feedImages) {
+        this.title = title;
+        this.content = content;
+        this.images = new ArrayList<>(feedImages);
+    }
+
     public void setImages(List<FeedImage> images) {
-        this.images = images;
+        this.images = new ArrayList<>(images);
     }
 
     public List<Long> getImageIdList(List<FeedImage> images) {
