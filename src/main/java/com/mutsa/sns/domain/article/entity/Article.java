@@ -4,6 +4,8 @@ import com.mutsa.sns.domain.user.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.List;
+
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -22,6 +24,21 @@ public class Article {
 
     private String title;
     private String content;
-    private Boolean draft;
     private String deletedAt;
+
+    // 이미지와 1:N 관계
+    @OneToMany(mappedBy = "article")
+    private List<FeedImage> images;
+
+    public static Article newEntity(User user, String title, String content) {
+        return Article.builder()
+                .user(user)
+                .title(title)
+                .content(content)
+                .build();
+    }
+
+    public void setImages(List<FeedImage> images) {
+        this.images = images;
+    }
 }
