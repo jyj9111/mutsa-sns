@@ -1,9 +1,13 @@
 package com.mutsa.sns.domain.user.entity;
 
+import com.mutsa.sns.domain.article.entity.Article;
 import com.mutsa.sns.domain.user.dto.UserRegisterDto;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -24,6 +28,10 @@ public class User {
     private String email;
     private String phone;
     private String profileImg;
+
+    // 피드와 1:N 관계
+    @OneToMany(mappedBy = "user")
+    private List<Article> articles = new ArrayList<>();
 
     public static User fromRegisterDto(UserRegisterDto dto) {
         User user = new User();
