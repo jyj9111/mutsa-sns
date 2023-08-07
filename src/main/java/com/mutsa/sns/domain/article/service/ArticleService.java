@@ -47,16 +47,13 @@ public class ArticleService {
 
         // 해당 게시글의 이미지 등록
         List<FeedImage> feedImages = new ArrayList<>();
-        if (images.isEmpty()) {
-            String imgUrl = "/static/feed/base.png";
-            feedImages.add(imageRepository.save(FeedImage.newEntity(newArticle, imgUrl)));
-        }
-        else {
+        if (images.get(0).getContentType() != null) {
             for (MultipartFile image : images) {
                 String imgUrl = fileHandler.getFeedImgPath(newArticle.getId(), image);
                 feedImages.add(imageRepository.save(FeedImage.newEntity(newArticle, imgUrl)));
             }
         }
+
 
         newArticle.setImages(feedImages);
         Article article = articleRepository.save(newArticle);
