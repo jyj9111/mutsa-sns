@@ -5,10 +5,7 @@ import com.mutsa.sns.domain.article.service.ArticleService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.security.Principal;
@@ -22,7 +19,7 @@ public class ArticleController {
     private final ArticleService articleService;
 
     // 게시글(피드) 등록
-    @PostMapping(value = "/feed", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ArticleResponseDto create(
             Principal principal,
             @RequestParam("title") String title,
@@ -30,5 +27,20 @@ public class ArticleController {
             @RequestParam("image") List<MultipartFile> images
     ) {
         return articleService.createArticle(principal.getName(), title, content, images);
+    }
+
+    // 게시글(피드) 수정
+    @PutMapping(value = "/{article_id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ArticleResponseDto update(
+            Principal principal,
+            @PathVariable("article_id") Long articleId,
+            @RequestParam("title") String title,
+            @RequestParam("content") String content,
+            @RequestParam("delete-img") List<String> deleteList,
+            @RequestParam("image") List<MultipartFile> images
+    ) {
+        return articleService.updateArticle(
+                principal.getName(),articleId, title, content, deleteList, images
+        );
     }
 }

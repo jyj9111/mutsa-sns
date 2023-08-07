@@ -47,6 +47,7 @@ public class FileHandler {
     public String getFeedImgPath(Long id, MultipartFile image) {
         String imgName = LocalDateTime.now().toString()
                 .replace(":","").replace("-","").replace(".","");
+
         String extension = "." + image.getOriginalFilename().split("\\.")[1];
         String filename = imgName + extension;
         String imgDir = String.format("./images/feed/%d", id);
