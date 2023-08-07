@@ -1,5 +1,6 @@
 package com.mutsa.sns.domain.article.service;
 
+import com.mutsa.sns.domain.article.dto.ArticleFeedListDto;
 import com.mutsa.sns.domain.article.dto.ArticleResponseDto;
 import com.mutsa.sns.domain.article.entity.Article;
 import com.mutsa.sns.domain.article.entity.FeedImage;
@@ -13,6 +14,10 @@ import com.mutsa.sns.global.error.exception.NoAuthUser;
 import com.mutsa.sns.global.util.FileHandler;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.provisioning.UserDetailsManager;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -113,5 +118,18 @@ public class ArticleService {
                 "게시글(피드) 수정을 완료했습니다.",
                 article.getImageIdList(article.getImages())
         );
+    }
+
+
+    public Page<ArticleFeedListDto> readAll(String username, Integer page, Integer limit) {
+        if (!manager.userExists(username)) {
+            log.warn("job: readAll, username:[{}], message: 존재하지 않는 유저", username);
+            throw new UsernameNotExist();
+        }
+
+        Pageable pageable = PageRequest.of(page, limit, Sort.by("id"));
+        Page<Article> articlePage = articleRepository.findAllByUserUsername(username, pageable);
+        Page<ArticleFeedListDto> dtoPage = articlePage.map(ArticleFeedListDto::fromEntity);
+        return dtoPage;
     }
 }

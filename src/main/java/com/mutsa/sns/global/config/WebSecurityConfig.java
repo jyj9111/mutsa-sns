@@ -28,7 +28,9 @@ public class WebSecurityConfig {
                         authHttp.requestMatchers(
                                 "/",
                                 "/users/register",
-                                "/users/login"
+                                "/users/login",
+                                "/articles/{username}",
+                                "/static/**"
                         ).permitAll()
                         .anyRequest()
                         .authenticated()
