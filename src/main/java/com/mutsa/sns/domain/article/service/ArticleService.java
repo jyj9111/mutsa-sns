@@ -11,6 +11,7 @@ import com.mutsa.sns.domain.article.repo.ImageRepository;
 import com.mutsa.sns.domain.user.entity.CustomUserDetails;
 import com.mutsa.sns.domain.user.entity.User;
 import com.mutsa.sns.domain.user.exception.UsernameNotExist;
+import com.mutsa.sns.global.common.ResponseDto;
 import com.mutsa.sns.global.error.exception.NoAuthUser;
 import com.mutsa.sns.global.util.FileHandler;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +24,7 @@ import org.springframework.security.provisioning.UserDetailsManager;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -103,7 +105,6 @@ public class ArticleService {
         List<FeedImage> feedImages = new ArrayList<>(article.getImages());
 
         if (images.get(0).getContentType() != null) {
-            log.info("요기");
             for (MultipartFile image : images) {
                 String imgUrl = fileHandler.getFeedImgPath(article.getId(), image);
                 feedImages.add(imageRepository.save(FeedImage.newEntity(article, imgUrl)));
@@ -123,7 +124,7 @@ public class ArticleService {
     // 게시글(피드) 목록 조회
     public Page<ArticleFeedListDto> readAll(String username, Integer page, Integer limit) {
         if (!manager.userExists(username)) {
-            log.warn("job: readAll, username:[{}], message: 존재하지 않는 유저", username);
+            log.warn("job: article-readAll, username:[{}], message: 존재하지 않는 유저", username);
             throw new UsernameNotExist();
         }
 
@@ -137,9 +138,36 @@ public class ArticleService {
     public ArticleFeedDto readArticle(Long articleId) {
         Optional<Article> optionalArticle = articleRepository.findById(articleId);
         if (optionalArticle.isEmpty()) {
-            log.warn("job: readArticle, article_id: {}, message: 존재하지 않는 게시글(피드)", articleId);
+            log.warn("job: article-read, article_id: {}, message: 존재하지 않는 게시글(피드)", articleId);
             throw new ArticleNotExist();
         }
         return ArticleFeedDto.fromEntity(optionalArticle.get());
+    }
+
+    public ResponseDto deleteArticle(String username, Long articleId) {
+        Optional<Article> optionalArticle = articleRepository.findById(articleId);
+        if (optionalArticle.isEmpty()) {
+            log.warn("job: article-delete, article_id: {}, message: 존재하지 않는 게시글(피드)", articleId);
+            throw new ArticleNotExist();
+        }
+
+        Article article = optionalArticle.get();
+
+        if (!article.getUser().getUsername().equals(username)) {
+            log.warn("job: article-update, username:[{}], message: 잘못된 사용자의 접근", username);
+            throw new NoAuthUser();
+        }
+
+        // 삭제한 시간 기록
+        String now = LocalDateTime.now().toString().split("\\.")[0];
+        article.setDeletedAt(now);
+        articleRepository.save(article);
+
+        // 이미지 삭제
+        for (FeedImage feedImage : article.getImages()) {
+            imageRepository.deleteById(feedImage.getId());
+        }
+
+        return new ResponseDto("해당 게시글(피드)가 삭제되었습니다.");
     }
 }

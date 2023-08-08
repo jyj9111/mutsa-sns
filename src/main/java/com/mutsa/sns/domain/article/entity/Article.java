@@ -48,6 +48,9 @@ public class Article {
     public void setImages(List<FeedImage> images) {
         this.images = new ArrayList<>(images);
     }
+    public void setDeletedAt(String time) {
+        this.deletedAt = time;
+    }
 
     public List<Long> getImageIdList(List<FeedImage> images) {
         List<Long> imgIdList = new ArrayList<>();
@@ -56,4 +59,5 @@ public class Article {
         }
         return imgIdList;
     }
+
 }

@@ -4,6 +4,8 @@ import com.mutsa.sns.domain.article.dto.ArticleFeedDto;
 import com.mutsa.sns.domain.article.dto.ArticleFeedListDto;
 import com.mutsa.sns.domain.article.dto.ArticleResponseDto;
 import com.mutsa.sns.domain.article.service.ArticleService;
+import com.mutsa.sns.global.common.ResponseDto;
+import com.oracle.svm.core.annotate.Delete;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -64,5 +66,14 @@ public class ArticleController {
             @PathVariable("article_id") Long articleId
     ) {
         return articleService.readArticle(articleId);
+    }
+
+    // 게시글(피드) 삭제
+    @DeleteMapping("/{username}/{article_id}")
+    public ResponseDto delete(
+            Principal principal,
+            @PathVariable("article_id") Long articleId
+    ) {
+        return articleService.deleteArticle(principal.getName(), articleId);
     }
 }
