@@ -24,4 +24,17 @@ public class CommentController {
     ) {
        return commentService.createComment(principal.getName(), articleId, dto);
     }
+
+    // 댓글 수정
+    @PutMapping("/{article_id}/{comment_id}")
+    public CommentResponseDto update(
+            Principal principal,
+            @PathVariable("article_id") Long articleId,
+            @PathVariable("comment_id") Long commentId,
+            @RequestBody CommentRequestDto dto
+    ) {
+        return commentService.updateComment(
+                principal.getName(), articleId, commentId, dto
+        );
+    }
 }

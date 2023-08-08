@@ -11,6 +11,7 @@ import com.mutsa.sns.domain.user.entity.CustomUserDetails;
 import com.mutsa.sns.domain.user.entity.User;
 import com.mutsa.sns.domain.user.exception.UsernameNotExist;
 import com.mutsa.sns.global.common.ResponseDto;
+import com.mutsa.sns.global.error.exception.NoAuthUser;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.provisioning.UserDetailsManager;
@@ -46,6 +47,37 @@ public class CommentService {
 
         return CommentResponseDto.fromEntity(
                 commentRepository.save(Comment.newEntity(user, article, dto))
+        );
+    }
+
+    public CommentResponseDto updateComment(
+            String username, Long articleId, Long commentId, CommentRequestDto dto
+    ) {
+        // 게시글 존재 확인
+        Optional<Article> optionalArticle = articleRepository.findById(articleId);
+        if (optionalArticle.isEmpty()) {
+            log.warn("job: comment-update, id: {}, message: 해당 게시글이 존재하지 않음", articleId);
+            throw new ArticleNotExist();
+        }
+        Article article = optionalArticle.get();
+
+        // 댓글 존재 확인
+        Optional<Comment> optionalComment = commentRepository.findById(commentId);
+        if (optionalComment.isEmpty()) {
+            log.warn("job: comment-update, id: {}, message: 해당 댓글이 존재하지 않음", commentId);
+        }
+        Comment comment = optionalComment.get();
+
+        // 댓글 작성자인지 확인
+        if (!comment.getUser().getUsername().equals(username)) {
+            log.warn("job: comment-update, username: [{}], message: 잘못된 사용자의 접근", username);
+            throw new NoAuthUser();
+        }
+
+        comment.setContent(dto);
+
+        return CommentResponseDto.fromEntity(
+                commentRepository.save(comment)
         );
     }
 }

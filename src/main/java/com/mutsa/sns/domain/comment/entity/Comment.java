@@ -34,4 +34,8 @@ public class Comment {
                 .content(dto.getContent())
                 .build();
     }
+
+    public void setContent(CommentRequestDto dto) {
+        this.content = dto.getContent();
+    }
 }
