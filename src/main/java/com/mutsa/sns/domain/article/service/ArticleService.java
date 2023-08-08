@@ -1,5 +1,6 @@
 package com.mutsa.sns.domain.article.service;
 
+import com.mutsa.sns.domain.article.dto.ArticleFeedDto;
 import com.mutsa.sns.domain.article.dto.ArticleFeedListDto;
 import com.mutsa.sns.domain.article.dto.ArticleResponseDto;
 import com.mutsa.sns.domain.article.entity.Article;
@@ -58,7 +59,6 @@ public class ArticleService {
                 feedImages.add(imageRepository.save(FeedImage.newEntity(newArticle, imgUrl)));
             }
         }
-
 
         newArticle.setImages(feedImages);
         Article article = articleRepository.save(newArticle);
@@ -120,7 +120,7 @@ public class ArticleService {
         );
     }
 
-
+    // 게시글(피드) 목록 조회
     public Page<ArticleFeedListDto> readAll(String username, Integer page, Integer limit) {
         if (!manager.userExists(username)) {
             log.warn("job: readAll, username:[{}], message: 존재하지 않는 유저", username);
@@ -131,5 +131,15 @@ public class ArticleService {
         Page<Article> articlePage = articleRepository.findAllByUserUsername(username, pageable);
         Page<ArticleFeedListDto> dtoPage = articlePage.map(ArticleFeedListDto::fromEntity);
         return dtoPage;
+    }
+
+    // 게시글(피드) 단독 조회
+    public ArticleFeedDto readArticle(Long articleId) {
+        Optional<Article> optionalArticle = articleRepository.findById(articleId);
+        if (optionalArticle.isEmpty()) {
+            log.warn("job: readArticle, article_id: {}, message: 존재하지 않는 게시글(피드)", articleId);
+            throw new ArticleNotExist();
+        }
+        return ArticleFeedDto.fromEntity(optionalArticle.get());
     }
 }

@@ -1,5 +1,6 @@
 package com.mutsa.sns.domain.article.controller;
 
+import com.mutsa.sns.domain.article.dto.ArticleFeedDto;
 import com.mutsa.sns.domain.article.dto.ArticleFeedListDto;
 import com.mutsa.sns.domain.article.dto.ArticleResponseDto;
 import com.mutsa.sns.domain.article.service.ArticleService;
@@ -54,5 +55,14 @@ public class ArticleController {
             @RequestParam(value = "limit", defaultValue = "10") Integer limit
     ) {
         return articleService.readAll(username, page, limit);
+    }
+
+    // 게시글(피드) 단독 조회
+    @GetMapping("/{username}/{article_id}")
+    public ArticleFeedDto read(
+            @PathVariable("username") String username,
+            @PathVariable("article_id") Long articleId
+    ) {
+        return articleService.readArticle(articleId);
     }
 }
