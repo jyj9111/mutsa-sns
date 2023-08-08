@@ -26,6 +26,7 @@ public class Comment {
     private Article article;
 
     private String content;
+    private String deletedAt;
 
     public static Comment newEntity(User user, Article article, CommentRequestDto dto) {
         return Comment.builder()
@@ -37,5 +38,9 @@ public class Comment {
 
     public void setContent(CommentRequestDto dto) {
         this.content = dto.getContent();
+    }
+
+    public void setDeletedAt(String time) {
+        this.deletedAt = time;
     }
 }

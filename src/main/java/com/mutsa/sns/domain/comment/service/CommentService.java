@@ -6,6 +6,7 @@ import com.mutsa.sns.domain.article.repo.ArticleRepository;
 import com.mutsa.sns.domain.comment.dto.CommentRequestDto;
 import com.mutsa.sns.domain.comment.dto.CommentResponseDto;
 import com.mutsa.sns.domain.comment.entity.Comment;
+import com.mutsa.sns.domain.comment.exception.CommentNotExist;
 import com.mutsa.sns.domain.comment.repo.CommentRepository;
 import com.mutsa.sns.domain.user.entity.CustomUserDetails;
 import com.mutsa.sns.domain.user.entity.User;
@@ -17,6 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.provisioning.UserDetailsManager;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Slf4j
@@ -59,12 +61,12 @@ public class CommentService {
             log.warn("job: comment-update, id: {}, message: 해당 게시글이 존재하지 않음", articleId);
             throw new ArticleNotExist();
         }
-        Article article = optionalArticle.get();
 
         // 댓글 존재 확인
         Optional<Comment> optionalComment = commentRepository.findById(commentId);
         if (optionalComment.isEmpty()) {
             log.warn("job: comment-update, id: {}, message: 해당 댓글이 존재하지 않음", commentId);
+            throw new CommentNotExist();
         }
         Comment comment = optionalComment.get();
 
@@ -79,5 +81,29 @@ public class CommentService {
         return CommentResponseDto.fromEntity(
                 commentRepository.save(comment)
         );
+    }
+
+    // 댓글 삭제
+    public ResponseDto deleteComment(String username, Long articleId, Long commentId) {
+        // 게시글 존재 확인
+        if (articleRepository.findById(articleId).isEmpty()) {
+            log.warn("job: comment-delete, id: {}, message: 해당 게시글이 존재하지 않음", articleId);
+            throw new ArticleNotExist();
+        }
+
+        // 댓글 존재 확인
+        Optional<Comment> optionalComment = commentRepository.findById(commentId);
+        if (optionalComment.isEmpty()) {
+            log.warn("job: comment-delete, id: {}, message: 해당 댓글이 존재하지 않음", commentId);
+            throw new CommentNotExist();
+        }
+        Comment comment = optionalComment.get();
+
+        // 삭제한 시간 기록
+        String now = LocalDateTime.now().toString().split("\\.")[0];
+        comment.setDeletedAt(now);
+        commentRepository.save(comment);
+
+        return new ResponseDto("해당 댓글이 삭제 되었습니다.");
     }
 }
