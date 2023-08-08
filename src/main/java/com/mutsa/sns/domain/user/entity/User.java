@@ -42,16 +42,20 @@ public class User {
     )
     private List<Article> likeArticles = new ArrayList<>();
 
-    public static User fromRegisterDto(UserRegisterDto dto) {
-        User user = new User();
-        user.builder()
-                .username(dto.getUsername())
-                .password(dto.getPassword())
-                .email(dto.getEmail())
-                .phone(dto.getPhone())
-                .build();
-        return user;
-    }
+
+    @ManyToMany
+    @JoinTable(
+            name = "user_follows",
+            joinColumns = @JoinColumn(name = "following"),
+            inverseJoinColumns = @JoinColumn(name = "follower")
+    )
+    private List<User> followings = new ArrayList<>();
+
+    @ManyToMany(mappedBy = "followings")
+    private List<User> followers =  new ArrayList<>();
+
+
+
 
     public static User fromUserDetails(CustomUserDetails userDetails) {
         return User.builder()
@@ -64,10 +68,19 @@ public class User {
                 .build();
 
     }
+
     public void updateProfileImg(String imgUrl) {
         this.profileImg = imgUrl;
     }
     public void setLikeArticles(List<Article> articles) {
         this.likeArticles = new ArrayList<>(articles);
     }
+    public void setFollowings(List<User> followings) {
+        this.followings = new ArrayList<>(followings);
+    }
+
+    public void setFollowers(List<User> followers) {
+        this.followers = new ArrayList<>(followers);
+    }
+
 }
