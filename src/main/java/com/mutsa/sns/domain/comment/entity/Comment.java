@@ -1,6 +1,7 @@
 package com.mutsa.sns.domain.comment.entity;
 
 import com.mutsa.sns.domain.article.entity.Article;
+import com.mutsa.sns.domain.comment.dto.CommentRequestDto;
 import com.mutsa.sns.domain.user.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
@@ -25,5 +26,12 @@ public class Comment {
     private Article article;
 
     private String content;
-    
+
+    public static Comment newEntity(User user, Article article, CommentRequestDto dto) {
+        return Comment.builder()
+                .user(user)
+                .article(article)
+                .content(dto.getContent())
+                .build();
+    }
 }
