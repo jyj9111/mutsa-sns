@@ -37,4 +37,14 @@ public class CommentController {
                 principal.getName(), articleId, commentId, dto
         );
     }
+
+    // 댓글 삭제
+    @DeleteMapping("/{article_id}/{comment_id}")
+    public ResponseDto delete(
+            Principal principal,
+            @PathVariable("article_id") Long articleId,
+            @PathVariable("comment_id") Long commentId
+    ) {
+        return commentService.deleteComment(principal.getName(), articleId, commentId);
+    }
 }
