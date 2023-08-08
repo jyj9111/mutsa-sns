@@ -33,6 +33,15 @@ public class User {
     @OneToMany(mappedBy = "user")
     private List<Article> articles = new ArrayList<>();
 
+    // 피드와 M:N 관계
+    @ManyToMany
+    @JoinTable(
+            name = "like_article",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "article_id")
+    )
+    private List<Article> likeArticles = new ArrayList<>();
+
     public static User fromRegisterDto(UserRegisterDto dto) {
         User user = new User();
         user.builder()
@@ -58,5 +67,7 @@ public class User {
     public void updateProfileImg(String imgUrl) {
         this.profileImg = imgUrl;
     }
-
+    public void setLikeArticles(List<Article> articles) {
+        this.likeArticles = new ArrayList<>(articles);
+    }
 }

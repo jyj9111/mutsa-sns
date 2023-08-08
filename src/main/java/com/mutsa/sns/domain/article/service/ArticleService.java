@@ -2,6 +2,7 @@ package com.mutsa.sns.domain.article.service;
 
 import com.mutsa.sns.domain.article.dto.ArticleFeedDto;
 import com.mutsa.sns.domain.article.dto.ArticleFeedListDto;
+import com.mutsa.sns.domain.article.dto.ArticleLikeResponseDto;
 import com.mutsa.sns.domain.article.dto.ArticleResponseDto;
 import com.mutsa.sns.domain.article.entity.Article;
 import com.mutsa.sns.domain.article.entity.FeedImage;
@@ -11,6 +12,7 @@ import com.mutsa.sns.domain.article.repo.ImageRepository;
 import com.mutsa.sns.domain.user.entity.CustomUserDetails;
 import com.mutsa.sns.domain.user.entity.User;
 import com.mutsa.sns.domain.user.exception.UsernameNotExist;
+import com.mutsa.sns.domain.user.repo.UserRepository;
 import com.mutsa.sns.global.common.ResponseDto;
 import com.mutsa.sns.global.error.exception.NoAuthUser;
 import com.mutsa.sns.global.util.FileHandler;
@@ -37,6 +39,7 @@ public class ArticleService {
     private final UserDetailsManager manager;
     private final ArticleRepository articleRepository;
     private final ImageRepository imageRepository;
+    private final UserRepository userRepository;
 
     // 게시글(피드) 등록
     public ArticleResponseDto createArticle(
@@ -169,5 +172,69 @@ public class ArticleService {
         }
 
         return new ResponseDto("해당 게시글(피드)가 삭제되었습니다.");
+    }
+
+    // 게시글(피드) 좋아요 상태 변경
+    public ArticleLikeResponseDto updateLike(String username, Long articleId) {
+        // 게시글 존재 확인
+        Optional<Article> optionalArticle = articleRepository.findById(articleId);
+        if (optionalArticle.isEmpty()) {
+            log.warn("job: article-like, article_id: {}, message: 존재하지 않는 게시글(피드)", articleId);
+            throw new ArticleNotExist();
+        }
+        Article article = optionalArticle.get();
+
+        // 등록되어있는 유저인지 확인
+        if (!manager.userExists(username)) {
+            log.warn("job: article-like, username: [{}], message: 존재하지 않는 유저", username);
+            throw new UsernameNotExist();
+        }
+        // 확인이 되면 유저정보를 가져옴.
+        User user = User.fromUserDetails((CustomUserDetails)manager.loadUserByUsername(username));
+
+        // 게시글 작성자는 좋아요를 누를수 없다.
+        if (article.getUser().getUsername().equals(username)) {
+            log.warn("job: article-like, username: [{}], message: 잘못된 사용자의 접근", username);
+            throw new NoAuthUser();
+        }
+
+        Article updateArticle;
+        String status;
+        // 이미 좋아요가 되있는 경우
+        if (checkLike(username, article)) {
+            article.getLikeUsers().remove(user);
+            updateArticle = articleRepository.save(article);
+            if (user.getLikeArticles() == null) {
+                user.setLikeArticles(new ArrayList<>());
+            } else {
+                user.getLikeArticles().remove(article);
+            }
+            userRepository.save(user);
+            status = "null";
+        }
+        // 좋아요가 안되어있는 경우
+        else {
+            article.setLikeUsers(user);
+            updateArticle = articleRepository.save(article);
+            if (user.getLikeArticles() == null) {
+                List<Article> articles = new ArrayList<>();
+                articles.add(article);
+                user.setLikeArticles(articles);
+            } else {
+                user.getLikeArticles().add(article);
+            }
+            userRepository.save(user);
+
+            status = "like";
+        }
+
+        return new ArticleLikeResponseDto(updateArticle.getId(), status);
+    }
+
+    private boolean checkLike(String username, Article article) {
+        for (User user : article.getLikeUsers()) {
+            if (user.getUsername().equals(username)) return true;
+        }
+        return false;
     }
 }

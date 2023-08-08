@@ -2,6 +2,7 @@ package com.mutsa.sns.domain.article.controller;
 
 import com.mutsa.sns.domain.article.dto.ArticleFeedDto;
 import com.mutsa.sns.domain.article.dto.ArticleFeedListDto;
+import com.mutsa.sns.domain.article.dto.ArticleLikeResponseDto;
 import com.mutsa.sns.domain.article.dto.ArticleResponseDto;
 import com.mutsa.sns.domain.article.service.ArticleService;
 import com.mutsa.sns.global.common.ResponseDto;
@@ -10,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -60,20 +62,28 @@ public class ArticleController {
     }
 
     // 게시글(피드) 단독 조회
-    @GetMapping("/{username}/{article_id}")
+    @GetMapping("/{article_id}")
     public ArticleFeedDto read(
-            @PathVariable("username") String username,
             @PathVariable("article_id") Long articleId
     ) {
         return articleService.readArticle(articleId);
     }
 
     // 게시글(피드) 삭제
-    @DeleteMapping("/{username}/{article_id}")
+    @DeleteMapping("/{article_id}")
     public ResponseDto delete(
             Principal principal,
             @PathVariable("article_id") Long articleId
     ) {
         return articleService.deleteArticle(principal.getName(), articleId);
+    }
+
+    // 게시글(피드) 좋아요 기능
+    @PostMapping("/{article_id}/like")
+    public ArticleLikeResponseDto updateLike(
+            Principal principal,
+            @PathVariable("article_id") Long articleId
+    ) {
+        return articleService.updateLike(principal.getName(), articleId);
     }
 }
