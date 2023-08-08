@@ -36,6 +36,17 @@ public class Article {
     @OneToMany(mappedBy = "article")
     private List<Comment> comments;
 
+    // 유저와 M:N 관계
+    @ManyToMany
+    @JoinTable(
+            name = "like_article",
+            joinColumns = @JoinColumn(name = "article_id"),
+            inverseJoinColumns = @JoinColumn(name = "user_id")
+    )
+    private List<User> likeUsers = new ArrayList<>();
+
+
+
     public static Article newEntity(User user, String title, String content) {
         return Article.builder()
                 .user(user)
@@ -55,6 +66,9 @@ public class Article {
     }
     public void setDeletedAt(String time) {
         this.deletedAt = time;
+    }
+    public void setLikeUsers(User user) {
+        this.likeUsers.add(user);
     }
 
     public List<Long> getImageIdList(List<FeedImage> images) {
