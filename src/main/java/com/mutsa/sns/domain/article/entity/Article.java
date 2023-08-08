@@ -1,5 +1,6 @@
 package com.mutsa.sns.domain.article.entity;
 
+import com.mutsa.sns.domain.comment.entity.Comment;
 import com.mutsa.sns.domain.user.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
@@ -30,6 +31,10 @@ public class Article {
     // 이미지와 1:N 관계
     @OneToMany(mappedBy = "article")
     private List<FeedImage> images;
+
+    // 댓글과 1:N 관계
+    @OneToMany(mappedBy = "article")
+    private List<Comment> comments;
 
     public static Article newEntity(User user, String title, String content) {
         return Article.builder()
