@@ -29,7 +29,7 @@ public class WebSecurityConfig {
                                 "/",
                                 "/users/register",
                                 "/users/login",
-                                "/articles/{username}",
+                                "/articles/read/**",
                                 "/static/**"
                         ).permitAll()
                         .anyRequest()

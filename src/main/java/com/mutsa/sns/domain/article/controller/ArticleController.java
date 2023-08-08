@@ -52,7 +52,7 @@ public class ArticleController {
     }
 
     // 게시글(피드) 목록 조회
-    @GetMapping("/{username}")
+    @GetMapping("/read/{username}")
     public Page<ArticleFeedListDto> readAll(
             @PathVariable("username") String username,
             @RequestParam(value = "page", defaultValue = "0") Integer page,
