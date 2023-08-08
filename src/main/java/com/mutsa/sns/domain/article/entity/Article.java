@@ -4,6 +4,7 @@ import com.mutsa.sns.domain.user.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Builder
@@ -38,7 +39,25 @@ public class Article {
                 .build();
     }
 
-    public void setImages(List<FeedImage> images) {
-        this.images = images;
+    public void updateArticle(String title, String content, List<FeedImage> feedImages) {
+        this.title = title;
+        this.content = content;
+        this.images = new ArrayList<>(feedImages);
     }
+
+    public void setImages(List<FeedImage> images) {
+        this.images = new ArrayList<>(images);
+    }
+    public void setDeletedAt(String time) {
+        this.deletedAt = time;
+    }
+
+    public List<Long> getImageIdList(List<FeedImage> images) {
+        List<Long> imgIdList = new ArrayList<>();
+        for (FeedImage image : images) {
+            imgIdList.add(image.getId());
+        }
+        return imgIdList;
+    }
+
 }
