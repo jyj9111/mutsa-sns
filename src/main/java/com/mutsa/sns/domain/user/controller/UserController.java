@@ -48,4 +48,14 @@ public class UserController {
     ) {
         return userService.updateProfileImage(principal.getName(), profileImg);
     }
+
+    // 팔로잉 기능
+    @PostMapping("/{username}")
+    public ResponseDto updateFollowing(
+            Principal principal,
+            @PathVariable("username") String targetName
+    ) {
+        return userService.updateFollowing(principal.getName(), targetName);
+    }
+
 }
